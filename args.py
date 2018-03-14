@@ -6,11 +6,6 @@ class ArgPolynomClass:
 		self.power = power
 		self.value = value
 
-class Complex:
-	def __init__(self, realpart, imagpart):
-		self.r = realpart
-		self.i = imagpart
-
 def abs_value(arg):
 	if arg.value < 0:
 		arg.value = abs(arg.value)
@@ -18,32 +13,24 @@ def abs_value(arg):
 	if arg.value and arg.value.is_integer():
 		arg.value = int(arg.value)
 
-def print_reduced(power_zero, power_one, power_two):
+def print_reduced(power_args):
 	final = 'Reduced form: '
 	sign = ''
 
-	if power_zero.value != 0:
-		if power_zero.sign == 1:
-			sign = ''
+	for elem in power_args:
+		if power_args.index(elem) == 0:
+			if elem.sign == 1:
+				sign = ''
+			else:
+				sign = '- '
+			final += "{}{} * X^{} ".format(sign, str(elem.value).rstrip('0').rstrip('.'), str(elem.power).rstrip('0').rstrip('.'))
 		else:
-			sign = '- '
-		final += "{}{} * X^0 ".format(sign, power_zero.value)
-
-	if power_one.value != 0:
-		if power_one.sign == 1:
-			if power_zero.value:
-				sign = str('+ ')
-		else:
-			sign = str('- ')
-		final += "{}{} * X^1 ".format(sign, power_one.value)
-
-	if power_two.value != 0:
-		if power_two.sign == 1:
-			if power_zero.value or power_one.value:
-				sign = str('+ ')
-		else:
-			sign = str('- ')
-		final += "{}{} * X^2 ".format(sign, power_two.value)
+			if elem.sign == 1:
+				if elem.value:
+					sign = str('+ ')
+			else:
+				sign = str('- ')
+			final += "{}{} * X^{} ".format(sign, str(elem.value).rstrip('0').rstrip('.'), str(elem.power).rstrip('0').rstrip('.'))
 
 	final += '= 0'
 	print final
