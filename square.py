@@ -3,7 +3,7 @@
 import sys
 import re
 
-from args import ArgPolynomClass, Complex, abs_value, print_reduced
+from args import ArgPolynomClass, abs_value, print_reduced
 
 equation_parts_tab = str(sys.argv[1]).split('=')
 
@@ -103,3 +103,47 @@ elif power_two_args.value != 0:
 		print "The discriminant is strictly negative, so it has two conjugates complexes solutions"
 		print "{} + i * {}".format("{:.6f}".format(x1).rstrip('0').rstrip('.'), "{:.6f}".format(abs(x1_delta))).rstrip('0').rstrip('.')
 		print "{} - i * {}".format("{:.6f}".format(x1).rstrip('0').rstrip('.'), "{:.6f}".format(abs(x1_delta))).rstrip('0').rstrip('.')
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+if power_two_args.value != 0:
+	a = power_two_args.value
+	b = power_one_args.value
+	c = power_zero_args.value
+	x = np.linspace(-100 - power_one_args.value , 100 - power_one_args.value, 256, endpoint = True)
+	y = (a * (x * x)) + (b * x) + c
+
+	test = 'y = '
+	
+	if a != 1:
+		test += str(a)
+	test += 'x^2'
+
+	if b != 0:
+		test += ' + '
+		if b != 1:
+			test += str(b)
+		test += 'x '
+
+	if c != 0:
+		test += '+ ' + str(c)
+
+	
+	# test = 'y =' + str(a) + 'x^2 + ' + str(b) + 'x ' + ' + ' + str(c)
+	plt.plot(x, y, '-g', label=r'$'+test+'$')
+
+	axes = plt.gca()
+	axes.set_xlim([x.min(), x.max()])
+	axes.set_ylim([y.min() - 10, y.max()])
+
+	plt.xlabel('x')
+	plt.ylabel('y')
+	plt.title('Polynomial Curve')
+	plt.legend(loc='upper left')
+
+	plt.show()
+	
