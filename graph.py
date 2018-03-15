@@ -50,8 +50,8 @@ def print_graph(power_zero_args, power_one_args, power_two_args):
 
 		plt.show()
 	elif power_one_args != 0:
-		b = power_one_args.value
-		c = power_zero_args.value
+		b = power_one_args.value * power_one_args.sign
+		c = power_zero_args.value * power_zero_args.sign
 
 		x1 = 0
 		x2 = 5
@@ -66,7 +66,9 @@ def print_graph(power_zero_args, power_one_args, power_two_args):
 			eq += 'x '
 
 		if c != 0:
-			eq += '+ ' + str(c)
+			if c > 0:
+				eq += '+ '
+			eq += str(c)
 
 		plt.plot([x1, x2], [y1, y2], '-g', label=r'$' + eq + '$')
 

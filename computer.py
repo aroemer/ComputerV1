@@ -99,7 +99,7 @@ elif power_two_args.value != 0:
 			print 'Discriminant is strictly positive (value = {}), the two solutions are:'.format("{:.6g}".format(delta))
 			print "{:.6g}".format(x2)
 		if delta == 0:
-			print 'Discriminant is null.\nThe solution is:'
+			print 'Discriminant is Zero.\nThe solution is:'
 		print "{:.6g}".format(x1)
 
 	else:
