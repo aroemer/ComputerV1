@@ -2,17 +2,13 @@
 
 import sys
 import re
-import numpy as np
-import matplotlib.pyplot as plt
 
 from args import ArgPolynomClass, abs_value, print_reduced
-
-if len(sys.argv) < 2:
-	sys.exit('Please enter a valid polynomial equation.')
+from graph import print_graph
 
 equation_parts_tab = str(sys.argv[1]).split('=')
 
-#5 * X^0 + 4 * X^1 - 9.3 * X^24 -> [('', '5', '0'), ('+', '4', '1'), ('-', '9.3', '24')]
+# 5 * X^0 + 4 * X^1 - 9.3 * X^24 -> [('', '5', '0'), ('+', '4', '1'), ('-', '9.3', '24')]
 parse_left_args = re.findall(r"(\+|\-|=)?\s*(\d+\.?\d*)\s*\*\s*[Xx]\^(\-?\d+\.?\d*)\s*", equation_parts_tab[0])
 parse_right_args = re.findall(r"(\+|\-|=)?\s*(\d+\.?\d*)\s*\*\s*[Xx]\^(\-?\d+\.?\d*)\s*", equation_parts_tab[1])
 
@@ -35,6 +31,7 @@ power_args = []
 # Array of all powers from input
 power_tmp = []
 
+# Create a ArgPolynomClass for each degree/power and put it in power_args
 for arg in all_args:
 	if not arg.power in power_tmp:
 		power_tmp.append(arg.power)
@@ -49,7 +46,7 @@ for power in power_tmp:
 			for elem in power_args:
 				if elem.power == power:
 					elem.value += arg.sign * arg.value
-		if arg.power >= degree:
+		if arg.power > degree:
 			degree = arg.power
 
 # Format value and sign 1, -5.0, 0 -> -1, 5, 0
@@ -58,11 +55,12 @@ for elem in power_args:
 
 print_reduced(power_args)
 
-print "Polynomial degree: {}".format(degree).rstrip('0').rstrip('.')
+# Print degree max
+print "Polynomial degree: {:.6g}".format(degree)
 
 for power in power_tmp:
 	if power != 0 and power != 1 and power != 2:
-		sys.exit('The polynomial degree is stricly greater than 2, I can\'t solve.')
+		sys.exit('The polynomial degree is stricly greater than 2 or strictly less than 0 or a float, I can\'t solve.')
 
 power_zero_args = ArgPolynomClass(1, 0, 0)
 power_one_args = ArgPolynomClass(1, 0, 1)
@@ -78,14 +76,14 @@ for arg in power_args:
 
 if power_one_args.value == 0 and power_two_args.value == 0:
 	if power_zero_args.value == 0:
-		sys.exit('Any real number can be a solution.')
+		print 'Any real number can be a solution.'
 	else:
-		sys.exit('No solution.')
+		print 'No solution.'
 elif power_one_args.value != 0 and power_two_args.value == 0:
 	x = - (float(power_zero_args.value * power_zero_args.sign) / (power_one_args.value * power_one_args.sign))
 	x = {True: int(x), False: x}[x == 0]
 	print 'The solution is:'
-	print "{:.6f}".format(x).rstrip('0').rstrip('.')
+	print "{:.6g}".format(x)
 elif power_two_args.value != 0:
 	delta = power_one_args.value ** 2 - 4 * float(power_two_args.value) * power_two_args.sign * power_zero_args.value * power_zero_args.sign
 
@@ -95,111 +93,21 @@ elif power_two_args.value != 0:
 		x1 = {True: int(x1), False: x1}[x1 == 0]
 		x2 = {True: int(x2), False: x2}[x2 == 0]
 		if delta != 0:
-			print 'Discriminant is strictly positive (value = {}), the two solutions are:'.format(delta).rstrip('0').rstrip('.')
-			print "{:.6f}".format(x2).rstrip('0').rstrip('.')
+			print 'Discriminant is strictly positive (value = {}), the two solutions are:' + "{:.6g}".format(delta)
+			print "{:.6g}".format(x2)
 		if delta == 0:
-			print 'The solution is:'
-		print "{:.6f}".format(x1).rstrip('0').rstrip('.')
+			print 'Discriminant is null.\nThe solution is:'
+		print "{:.6g}".format(x1)
 
 	else:
 		x1 = (- float(power_one_args.value) * power_one_args.sign) / (2 * power_two_args.value * power_two_args.sign)
 		x1 = {True: int(x1), False: x1}[x1 == 0]
 		x1_delta = (abs(delta) ** 0.5) / (2 * power_two_args.value * power_two_args.sign)
 		print "The discriminant is strictly negative, so it has two conjugates complexes solutions"
-		print "{} + i * {}".format("{:.6f}".format(x1).rstrip('0').rstrip('.'), "{:.6f}".format(abs(x1_delta))).rstrip('0').rstrip('.')
-		print "{} - i * {}".format("{:.6f}".format(x1).rstrip('0').rstrip('.'), "{:.6f}".format(abs(x1_delta))).rstrip('0').rstrip('.')
+		print "{} + i * {}".format("{:.6g}".format(x1), "{:.6g}".format(abs(x1_delta)))
+		print "{} - i * {}".format("{:.6g}".format(x1), "{:.6g}".format(abs(x1_delta)))
+		sys.exit()
 
-if power_two_args.value != 0:
-	a = power_two_args.value * power_two_args.sign
-	b = power_one_args.value * power_one_args.sign
-	c = power_zero_args.value * power_zero_args.sign
-	x = np.linspace( -b - 100 , b + 100, 256, endpoint = True)
-	y = (a * (x * x)) + (b * x) + c
+# Bonus: Graphical representation
 
-	eq = 'y='
-	
-	if a == -1: 
-		eq += '-'
-
-	if a != 1 and a != -1:
-		eq += str(a)
-	eq += 'x^2'
-
-	if b != 0:
-		if b == -1: 
-			eq += '-'
-		if b != 1 and b != -1:
-			if b > 0:
-				eq += '+'
-			eq += str(b)
-		eq += 'x'
-
-	if c != 0:
-		if c > 0:
-			eq += '+'
-		eq += str(c)
-
-
-	plt.plot(x, y, '-g', label='\n' + r'${}$'.format(eq))
-
-	axes = plt.gca()
-	axes.set_xlim([x.min(), x.max()])
-	axes.set_ylim([y.min() - 10, y.max()])
-
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.title('Polynomial Curve')
-	plt.legend(loc='upper left')
-
-	plt.show()
-elif power_one_args != 0:
-	b = power_one_args.value
-	c = power_zero_args.value
-
-	x1 = 0
-	x2 = 5
-	y1 = b * x1 + c
-	y2 = b * x2 + c
-
-	eq = 'y = '
-
-	if b != 0:
-		if b != 1:
-			eq += str(b)
-		eq += 'x '
-
-	if c != 0:
-		eq += '+ ' + str(c)
-
-	plt.plot([x1, x2], [y1, y2], '-g', label=r'$' + eq + '$')
-
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.title('Polynomial Curve')
-	plt.legend(loc='upper left')
-
-	plt.show()
-elif power_zero_args != 0:
-	b = power_one_args.value * power_one_args.sign
-
-	x1 = 0
-	x2 = 5
-	y1 = b * x1
-	y2 = b * x2
-
-	eq = 'y = '
-
-	if b != 0:
-		if b != 1:
-			eq += str(b)
-		eq += 'x'
-
-
-	plt.plot([x1, x2], [y1, y2], '-g', label=r'$' + eq + '$')
-
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.title('Polynomial Curve')
-	plt.legend(loc='upper left')
-
-	plt.show()
+print_graph(power_zero_args, power_one_args, power_two_args)

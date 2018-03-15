@@ -23,14 +23,14 @@ def print_reduced(power_args):
 				sign = ''
 			else:
 				sign = '- '
-			final += "{}{} * X^{} ".format(sign, str(elem.value).rstrip('0').rstrip('.'), str(elem.power).rstrip('0').rstrip('.'))
+			final += "{}{} * X^{} ".format(sign, "{:.6g}".format(elem.value), "{:.6g}".format(elem.power))
 		else:
 			if elem.sign == 1:
 				if elem.value:
 					sign = str('+ ')
 			else:
 				sign = str('- ')
-			final += "{}{} * X^{} ".format(sign, str(elem.value).rstrip('0').rstrip('.'), str(elem.power).rstrip('0').rstrip('.'))
+			final += "{}{} * X^{} ".format(sign, "{:.6g}".format(elem.value), "{:.6g}".format(elem.power))
 
 	final += '= 0'
 	print final
