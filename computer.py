@@ -6,6 +6,9 @@ import re
 from args import ArgPolynomClass, abs_value, print_reduced
 from graph import print_graph
 
+if len(sys.argv) < 2:
+	sys.exit('Please enter a valid polynomial equation.')
+
 equation_parts_tab = str(sys.argv[1]).split('=')
 
 # 5 * X^0 + 4 * X^1 - 9.3 * X^24 -> [('', '5', '0'), ('+', '4', '1'), ('-', '9.3', '24')]
@@ -76,9 +79,9 @@ for arg in power_args:
 
 if power_one_args.value == 0 and power_two_args.value == 0:
 	if power_zero_args.value == 0:
-		print 'Any real number can be a solution.'
+		sys.exit('Any real number can be a solution.')
 	else:
-		print 'No solution.'
+		sys.exit('No solution.')
 elif power_one_args.value != 0 and power_two_args.value == 0:
 	x = - (float(power_zero_args.value * power_zero_args.sign) / (power_one_args.value * power_one_args.sign))
 	x = {True: int(x), False: x}[x == 0]
@@ -103,7 +106,7 @@ elif power_two_args.value != 0:
 		x1 = (- float(power_one_args.value) * power_one_args.sign) / (2 * power_two_args.value * power_two_args.sign)
 		x1 = {True: int(x1), False: x1}[x1 == 0]
 		x1_delta = (abs(delta) ** 0.5) / (2 * power_two_args.value * power_two_args.sign)
-		print "The discriminant is strictly negative, so it has two conjugates complexes solutions"
+		print "The discriminant is strictly negative, so it has two conjugates complexes solutions:"
 		print "{} + i * {}".format("{:.6g}".format(x1), "{:.6g}".format(abs(x1_delta)))
 		print "{} - i * {}".format("{:.6g}".format(x1), "{:.6g}".format(abs(x1_delta)))
 		sys.exit()
